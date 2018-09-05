@@ -1,5 +1,6 @@
 const express = require('express');
 const data = require('./db/notes');
+const { PORT } = require('./config');
 const app = express();
 
 app.use(express.static('public'));
@@ -18,7 +19,7 @@ app.get('/api/notes/:id', function(req, res) {
 	res.json(requestedData);
 });
 
-app.listen(8080, function() {
+app.listen(PORT, function() {
 	console.info(`Server listening on ${this.address().port}`);
 }).on('error', err => {
 	console.log(err);
