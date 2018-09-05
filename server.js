@@ -1,6 +1,6 @@
 const express = require('express');
 const data = require('./db/notes');
-const simDB = require('./simDB');
+const simDB = require('./db/simDB');
 const notes = simDB.initialize(data);
 const { PORT } = require('./config');
 const { requestLogger } = require('./middleware/logger');
@@ -12,15 +12,28 @@ app.use(express.static('public'));
 app.get('/api/notes', function(req, res) {
     //same as const searchTerm =  req.query.searchTerm;
     const {searchTerm} = req.query;
-    //Same as if (Searchterm === true) {return data.filter(...) else {return data}}
-    res.json(searchTerm ? data.filter(string => string.title.includes(searchTerm)) : data);
+
+    notes.filter(searchTerm, (err, list, next) => {
+        if (err) {
+            return next(err);
+        }
+        res.json(list);
+    });
 });
 
-app.get('/api/notes/:id', function(req, res) {
+app.get('/api/notes/:id', function(req, res, next) {
     //Same as const id = req.params.id;
     const {id} = req.params;
-    let requestedData = data.find(x => x.id === Number(id));
-    res.json(requestedData);
+    
+    notes.find(id, (err, item) => {
+        if (err) {
+            next(err);
+        } else if (item) {
+            res.json(item);
+        } else {
+            next();
+        }
+    });
 });
 
 app.use(function(req, res, next) {
