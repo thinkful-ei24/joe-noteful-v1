@@ -8,6 +8,7 @@ const app = express();
 
 app.use(requestLogger);
 app.use(express.static('public'));
+app.use(express.json());
 
 app.get('/api/notes', function(req, res) {
     //same as const searchTerm =  req.query.searchTerm;
@@ -27,6 +28,29 @@ app.get('/api/notes/:id', function(req, res, next) {
     
     notes.find(id, (err, item) => {
         if (err) {
+            next(err);
+        } else if (item) {
+            res.json(item);
+        } else {
+            next();
+        }
+    });
+});
+
+app.put('/api/notes/:id', (req, res, next) => {
+    const { id } = req.params;
+    
+    const updateObj = {};
+    const updateFields = ['title', 'content'];
+
+    updateFields.forEach(field => {
+        if (field in req.body) {
+            updateObj[field] = req.body[field];
+        }
+    });
+
+    notes.update(id, updateObj, (err, item) => {
+        if(err) {
             next(err);
         } else if (item) {
             res.json(item);
