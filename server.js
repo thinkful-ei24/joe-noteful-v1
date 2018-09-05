@@ -2,7 +2,7 @@ const express = require('express');
 const data = require('./db/notes');
 const app = express();
 
-// app.get('/public');
+app.use(express.static('public'));
 
 app.get('/api/notes', function(req, res) {
 	res.json(data);
