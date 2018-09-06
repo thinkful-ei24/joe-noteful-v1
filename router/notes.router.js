@@ -20,11 +20,11 @@ router.get('/:id', function(req, res, next) {
     //Same as const id = req.params.id;
     const {id} = req.params;
     
-    notes.find(id, (err, item) => {
+    notes.find(id, (err, note) => {
         if (err) {
             next(err);
-        } else if (item) {
-            res.json(item);
+        } else if (note) {
+            res.json(note);
         } else {
             next();
         }
@@ -65,15 +65,25 @@ router.put('/:id', (req, res, next) => {
         }
     });
 
-    notes.update(id, updateObj, (err, item) => {
+    notes.update(id, updateObj, (err, note) => {
         if(err) {
             next(err);
-        } else if (item) {
-            res.json(item);
+        } else if (note) {
+            res.json(note);
         } else {
             next();
         }
     });
+});
+
+router.delete('/:id', (req, res, next) => {
+    notes.delete(req.params.id, err => {
+        if (err) {
+            next(err);
+        }
+    });
+    console.log(`Deleting note ${req.params.id}...`);
+    res.status(204).end();
 });
 
 module.exports = router;
