@@ -31,6 +31,28 @@ router.get('/:id', function(req, res, next) {
     });
 });
 
+router.post('/', (req, res, next) => {
+    const { title, content } = req.body;
+
+    const newNote = { title, content };
+
+    if(!newNote.title) {
+        const err = new Error('There must be a title in the body');
+        err.status = 400;
+        next(err);
+    }
+
+    notes.create(newNote, (err, note) => {
+        if(err) {
+            next(err);
+        } else if (note) {
+            res.location(`https://${req.headers.host}/${note.id}`).status(200).json(note);
+        } else {
+            next();
+        }
+    });
+});
+
 router.put('/:id', (req, res, next) => {
     const { id } = req.params;
     
